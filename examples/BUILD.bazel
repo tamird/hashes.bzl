@@ -1,10 +1,9 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
-load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@hashes.bzl", "hashes")
+load("//:digests.bzl", "write_digests")
 
-write_file(
+write_digests(
     name = "digests",
-    out = "digests.txt",
     content = [
         "blake3 " + hashes.blake3("abc"),
         "md5 " + hashes.md5("abc"),
@@ -24,9 +23,8 @@ write_file(
     ],
 )
 
-write_file(
+write_digests(
     name = "expected",
-    out = "expected.txt",
     content = [
         "blake3 6437b3ac38465133ffb63b75273a8db548c558465d79db03fd359c6cd5bd9d85",
         "md5 900150983cd24fb0d6963f7d28e17f72",

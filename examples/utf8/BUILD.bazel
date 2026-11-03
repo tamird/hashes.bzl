@@ -1,20 +1,23 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
-load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@hashes.bzl", "hashes")
+load("//:digests.bzl", "write_digests")
 
 # Multibyte text smuggled in through json.decode's \u escapes, which decode
 # to UTF-8 bytes from Bazel 8.2.0 (bazelbuild/bazel#24417).
-_CASES = json.decode(r"""
+_CASES_JSON = r"""
 [
     ["cjk", "\u4e2d\u6587"],
     ["emoji", "\ud83d\ude00"],
     ["4-byte-across-block", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\ud83d\ude00"]
 ]
-""")
+"""
 
-write_file(
+# json.decode accepts any JSON value; this fixture contains pairs of strings.
+# type: list[list[str]]
+_CASES = json.decode(_CASES_JSON)  # ty: ignore[non-static-type, unsound-assignment]
+
+write_digests(
     name = "digests",
-    out = "digests.txt",
     content = [
         "{} {} {} {}".format(
             name,
@@ -42,9 +45,8 @@ write_file(
     ] + [""],
 )
 
-write_file(
+write_digests(
     name = "expected",
-    out = "expected.txt",
     content = [
         "cjk 6 blake3 4f05dcae56fce00a285d7ea8dbe2bad7289afc3413397107d0b2f12c174b0949",
         "cjk 6 md5 a7bac2239fcdcb3a067903d8077c4a07",

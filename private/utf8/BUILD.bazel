@@ -1,10 +1,10 @@
-load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//bazel/python:defs.bzl", "starlark_pytest")
+load("//bazel/starlark:defs.bzl", "write_digests")
 load(":cases.bzl", "digest_lines")
 
 # Bazel's own interpreter decodes and hashes every case while loading this
 # package; test_utf8 checks what it wrote.
-write_file(
+write_digests(
     name = "starlark_digests",
     out = "starlark_digests.txt",
     content = digest_lines() + [""],

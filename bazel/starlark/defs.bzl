@@ -13,6 +13,13 @@ def _describe(message):
         message = message[:32] + "..."
     return repr(message)
 
+def write_digests(name, out, content):
+    # type: (str, str, list[str]) -> None
+    """Write digest lines to a test fixture."""
+
+    # Skylib 1.9.2 leaves write_file's parameters untyped.
+    write_file(name = name, out = out, content = content)  # ty: ignore[non-static-type]
+
 def hash_kat_test(
         # type: str
         name,
@@ -36,12 +43,13 @@ def hash_kat_test(
         vectors: A list of (message, hex digest) pairs.
         **kwargs: Passed through to diff_test.
     """
-    write_file(
+
+    write_digests(
         name = name + "_expected",
         out = name + ".expected.txt",
         content = ["{} {}".format(digest, _describe(message)) for message, digest in vectors] + [""],
     )
-    write_file(
+    write_digests(
         name = name + "_actual",
         out = name + ".actual.txt",
         content = ["{} {}".format(hash(message), _describe(message)) for message, _ in vectors] + [""],
